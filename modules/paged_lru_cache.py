@@ -1,16 +1,21 @@
 from math import trunc, ceil
 from typing import Any
 
-from modules.lru_cache import LRUCache
+from modules import MultiHitLRUCache
 
 
 DEFAULT_BLOCK_SIZE = 8 * 1024
 
 
-class PagedLRUCache(LRUCache):
-    def __init__(self, block_size: int = DEFAULT_BLOCK_SIZE, *args: Any, **kwargs: Any):
+class PagedLRUCache(MultiHitLRUCache):
+    def __init__(self, cache_size: int, block_size: int = DEFAULT_BLOCK_SIZE, *args: Any, **kwargs: Any):
         self.block_size = block_size
-        super().__init__(*args, **kwargs)
+        max_uncached_requests = int(cache_size / block_size)
+        super().__init__(
+            cache_size=cache_size,
+            max_uncached_requests = max_uncached_requests,
+            *args, **kwargs
+        )
 
     def __call__(self, offset: int, size: int) -> bytes:
         first_block_id = trunc(offset/self.block_size)

@@ -1,4 +1,4 @@
-from modules.paged_lru_cache import PagedLRUCache
+from modules import PagedLRUCache
 from tests.modules.utils import fake_read
 
 
@@ -19,7 +19,7 @@ class TestPagedLRUCache:
         assert cache.used_size == 500
 
     def test_cross_block_request(self):
-        cache = PagedLRUCache(read_function=fake_read, cache_size=1000, block_size=500)
+        cache = PagedLRUCache(read_function=fake_read, cache_size=1000, block_size=500, cache_after=0)
 
         cache(offset=100, size=500)
 
@@ -34,7 +34,7 @@ class TestPagedLRUCache:
             num_requests += 1
             return fake_read(offset, size)
 
-        cache = PagedLRUCache(read_function=mock_read, cache_size=1000, block_size=500)
+        cache = PagedLRUCache(read_function=mock_read, cache_size=1000, block_size=500, cache_after=0)
 
         for i in range(500):
             cache(offset=i, size=500)
@@ -51,7 +51,7 @@ class TestPagedLRUCache:
             requests.append((offset, size))
             return fake_read(offset, size)
 
-        cache = PagedLRUCache(read_function=mock_read, cache_size=1000, block_size=500)
+        cache = PagedLRUCache(read_function=mock_read, cache_size=1000, block_size=500, cache_after=0)
 
         cache(offset=100, size=1500)
 
@@ -59,3 +59,21 @@ class TestPagedLRUCache:
         assert cache.used_size == 1000
         assert len(requests) == 4
         assert requests == [(0, 500), (500, 500), (1000, 500), (1500, 500)]
+
+    def test_single_request_not_cached(self):
+        cache = PagedLRUCache(read_function=fake_read, cache_size=1000, block_size=500)
+
+        cache(offset=0, size=500)
+        cache(offset=500, size=500)
+
+        assert len(cache) == 0
+        assert cache.used_size == 0
+
+    def test_repeated_request_cached(self):
+        cache = PagedLRUCache(read_function=fake_read, cache_size=1000, block_size=500)
+
+        cache(offset=0, size=500)
+        cache(offset=0, size=500)
+
+        assert len(cache) == 1
+        assert cache.used_size == 500
