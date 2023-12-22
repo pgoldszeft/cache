@@ -8,16 +8,20 @@ class LRUCache:
         self.cache_size = cache_size
         self.read_function = read_function
         self.used_size = 0
+        self.hits = 0
+        self.missed = 0
 
     def __call__(self, offset: int, size: int) -> bytes:
         key = (offset, size)
         if key in self.cache:
             self.cache.move_to_end(key)
+            self.hits += 1
             return self.cache[key]
 
         data = self.read_function(offset, size)
         self.cache[key] = data
         self.used_size += size
+        self.missed += 1
 
         while self.used_size > self.cache_size:
             evicted_key, _ = self.cache.popitem(last=False)

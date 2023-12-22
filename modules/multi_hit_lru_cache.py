@@ -15,9 +15,11 @@ class MultiHitLRUCache(LRUCache):
         key = (offset, size)
         if key in self.cache:
             self.cache.move_to_end(key)
+            self.hits += 1
             return self.cache[key]
 
         data = self.read_function(offset, size)
+        self.missed += 1
 
         self.uncached_requests[key] = self.uncached_requests.get(key, 0) + 1
         if self.uncached_requests[key] <= self.cache_after:

@@ -50,3 +50,21 @@ class TestCache:
 
         assert len(cache) == 10
         assert cache.used_size == 100
+
+    def test_misses(self):
+        cache = LRUCache(read_function=fake_read, cache_size=100)
+
+        for i in range(10):
+            cache(offset=i, size=10)
+
+        assert cache.hits == 0
+        assert cache.missed == 10
+
+    def test_hits(self):
+        cache = LRUCache(read_function=fake_read, cache_size=100)
+
+        for _ in range(10):
+            cache(offset=0, size=10)
+
+        assert cache.hits == 9
+        assert cache.missed == 1

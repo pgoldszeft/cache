@@ -25,6 +25,8 @@ class PagedLRUCache(MultiHitLRUCache):
         last_block_offset = last_block_id * self.block_size
 
         result = b""
+
         for block_offset in range(first_block_offset, last_block_offset, self.block_size):
             result += super().__call__(block_offset, self.block_size)
-        return result
+
+        return result[offset:offset+size]
