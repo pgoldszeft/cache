@@ -25,3 +25,11 @@ poetry run python app.py
 ```
 poetry run pytest
 ```
+
+## Results of the performance evaluation
+| Cache model      | Hits    | Missed  | Hit Ratio |
+|------------------|---------|---------|-----------|
+| LRUCache         | 140751  | 759177  | 15.64%    |
+| PagedLRUCache    | 1123095 | 3474982 | 24.43%    |
+| MultiHitLRUCache | 141522  | 758406  | 15.73%    |
+| BlocksCache      | 549403  | 350525  | 61.05%    |
