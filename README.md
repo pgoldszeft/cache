@@ -16,12 +16,12 @@ The implementations evaluated are:
 poetry install
 ```
 
-# How to run the performance evaluation application
+## How to run the performance evaluation application
 ```
 poetry run python app.py
 ```
 
-# How to run the tests
+## How to run the tests
 ```
 poetry run pytest
 ```
